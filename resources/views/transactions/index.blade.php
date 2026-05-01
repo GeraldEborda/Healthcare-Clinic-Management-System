@@ -3,12 +3,21 @@
 @section('content')
     <div class="grid grid-2">
         <div class="panel">
-            <div class="page-head"><h1>Transactions</h1></div>
+            <div class="page-head">
+                <div class="section-title">
+                    <h1>Transactions</h1>
+                    <p>Record patient payments and track remaining balances.</p>
+                </div>
+                <a class="button" href="{{ route('transactions.report') }}">Generate Report</a>
+            </div>
             @include('transactions._form')
         </div>
         <div class="table-wrap">
             <div class="page-head">
-                <h3>Billing Records</h3>
+                <div class="section-title">
+                    <h3>Billing Records</h3>
+                    <p>Monitor payment status and recent collections.</p>
+                </div>
                 <span class="badge">{{ $transactions->total() }} records</span>
             </div>
             <form method="GET" action="{{ route('transactions.index') }}" class="filters">

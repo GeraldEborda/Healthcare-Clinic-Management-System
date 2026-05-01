@@ -3,12 +3,20 @@
 @section('content')
     <div class="grid grid-2">
         <div class="panel">
-            <div class="page-head"><h1>Appointments</h1></div>
+            <div class="page-head">
+                <div class="section-title">
+                    <h1>Appointments</h1>
+                    <p>Book visits while preventing doctor schedule conflicts.</p>
+                </div>
+            </div>
             @include('appointments._form')
         </div>
         <div class="table-wrap">
             <div class="page-head">
-                <h3>Schedule</h3>
+                <div class="section-title">
+                    <h3>Schedule</h3>
+                    <p>Filter the calendar by date, doctor, and status.</p>
+                </div>
                 <span class="badge">{{ $appointments->total() }} records</span>
             </div>
             <form method="GET" action="{{ route('appointments.index') }}" class="filters">

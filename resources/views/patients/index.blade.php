@@ -3,12 +3,21 @@
 @section('content')
     <div class="grid grid-2">
         <div class="panel">
-            <div class="page-head"><h1>Patients</h1><span class="badge">{{ $patients->total() }} records</span></div>
+            <div class="page-head">
+                <div class="section-title">
+                    <h1>Patients</h1>
+                    <p>Register patients and keep contact details current.</p>
+                </div>
+                <span class="badge">{{ $patients->total() }} records</span>
+            </div>
             @include('patients._form')
         </div>
         <div class="table-wrap">
             <div class="page-head">
-                <h3>Patient Directory</h3>
+                <div class="section-title">
+                    <h3>Patient Directory</h3>
+                    <p>Search records by name, email, or phone.</p>
+                </div>
             </div>
             <form method="GET" action="{{ route('patients.index') }}" class="filters">
                 <label class="wide">Search

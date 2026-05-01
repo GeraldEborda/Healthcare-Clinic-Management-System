@@ -4,23 +4,23 @@
     @if ($editing)
         @method('PUT')
     @endif
-    <label>Appointment
-        <select name="appointment_id" required>
-            <option value="">Select appointment</option>
-            @foreach ($appointments as $appointmentOption)
-                @php($hasTransaction = $appointmentOption->transaction && (!$editing || $appointmentOption->transaction->id !== $transaction->id))
-                @php($defaultAmount = $appointmentOption->service?->fee ?? $appointmentOption->doctor->consultation_fee)
-                <option value="{{ $appointmentOption->id }}" data-amount="{{ $defaultAmount }}" @selected(old('appointment_id', $transaction->appointment_id ?? '') == $appointmentOption->id) @disabled($hasTransaction)>
-                    {{ $appointmentOption->patient->name }} - {{ $appointmentOption->appointment_date->format('M d, Y') }}{{ $appointmentOption->service ? ' - '.$appointmentOption->service->name : '' }} - PHP {{ number_format($defaultAmount, 2) }}
-                </option>
-            @endforeach
-        </select>
-    </label>
-    <div class="grid grid-2">
+    <div class="form-grid">
+        <label class="full">Appointment
+            <select name="appointment_id" required>
+                <option value="">Select appointment</option>
+                @foreach ($appointments as $appointmentOption)
+                    @php($hasTransaction = $appointmentOption->transaction && (!$editing || $appointmentOption->transaction->id !== $transaction->id))
+                    @php($defaultAmount = $appointmentOption->service?->fee ?? $appointmentOption->doctor->consultation_fee)
+                    <option value="{{ $appointmentOption->id }}" data-amount="{{ $defaultAmount }}" @selected(old('appointment_id', $transaction->appointment_id ?? '') == $appointmentOption->id) @disabled($hasTransaction)>
+                        {{ $appointmentOption->patient->name }} - {{ $appointmentOption->appointment_date->format('M d, Y') }}{{ $appointmentOption->service ? ' - '.$appointmentOption->service->name : '' }} - PHP {{ number_format($defaultAmount, 2) }}
+                    </option>
+                @endforeach
+            </select>
+        </label>
         <label>Total Amount <input type="number" min="0" step="0.01" name="amount" value="{{ old('amount', $transaction->amount ?? '') }}" placeholder="Auto-filled from appointment"></label>
         <label>Paid Amount <input type="number" min="0" step="0.01" name="paid" value="{{ old('paid', $transaction->paid ?? '') }}" required></label>
+        <label class="full">Payment Method <input type="text" name="payment_method" value="{{ old('payment_method', $transaction->payment_method ?? '') }}" placeholder="Cash, Card, Transfer"></label>
     </div>
-    <label>Payment Method <input type="text" name="payment_method" value="{{ old('payment_method', $transaction->payment_method ?? '') }}" placeholder="Cash, Card, Transfer"></label>
     <div class="actions">
         <button type="submit">{{ $editing ? 'Update Transaction' : 'Add Transaction' }}</button>
         @if ($editing)

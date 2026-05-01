@@ -87,4 +87,13 @@ class ClinicManagementTest extends TestCase
             'status' => 'partial',
         ]);
     }
+
+    public function test_billing_report_loads_successfully(): void
+    {
+        $response = $this->get(route('transactions.report'));
+
+        $response->assertOk();
+        $response->assertSee('Billing Report');
+        $response->assertSee('Financial summary');
+    }
 }

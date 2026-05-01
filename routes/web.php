@@ -9,6 +9,7 @@ use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', DashboardController::class)->name('dashboard');
+Route::get('/transactions/report', [TransactionController::class, 'report'])->name('transactions.report');
 
 Route::resources([
     'patients' => PatientController::class,

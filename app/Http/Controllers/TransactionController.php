@@ -34,6 +34,37 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function report(Request $request): View
+    {
+        $validated = $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+            'status' => ['nullable', 'in:' . implode(',', array_keys($this->statuses()))],
+        ]);
+
+        $transactions = Transaction::with(['appointment.patient', 'appointment.doctor', 'appointment.service'])
+            ->when($validated['date_from'] ?? null, fn ($query, string $date) => $query->whereDate('created_at', '>=', $date))
+            ->when($validated['date_to'] ?? null, fn ($query, string $date) => $query->whereDate('created_at', '<=', $date))
+            ->when($validated['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
+            ->latest()
+            ->get();
+
+        return view('transactions.report', [
+            'transactions' => $transactions,
+            'statuses' => $this->statuses(),
+            'filters' => $validated,
+            'summary' => [
+                'count' => $transactions->count(),
+                'amount' => $transactions->sum('amount'),
+                'paid' => $transactions->sum('paid'),
+                'balance' => $transactions->sum('balance'),
+                'paid_count' => $transactions->where('status', 'paid')->count(),
+                'partial_count' => $transactions->where('status', 'partial')->count(),
+                'unpaid_count' => $transactions->where('status', 'unpaid')->count(),
+            ],
+        ]);
+    }
+
     public function store(Request $request): RedirectResponse
     {
         Transaction::create($this->validatedData($request));
