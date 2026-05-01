@@ -53,16 +53,74 @@ class TransactionController extends Controller
             'transactions' => $transactions,
             'statuses' => $this->statuses(),
             'filters' => $validated,
+            'doctorRevenue' => $transactions
+                ->groupBy(fn (Transaction $transaction) => $transaction->appointment->doctor->name)
+                ->map(fn ($items, string $doctor) => [
+                    'name' => $doctor,
+                    'paid' => $items->sum('paid') - $items->sum('refunded_amount'),
+                    'count' => $items->count(),
+                ])
+                ->sortByDesc('paid')
+                ->values(),
+            'serviceRevenue' => $transactions
+                ->groupBy(fn (Transaction $transaction) => $transaction->appointment->service?->name ?? 'Consultation')
+                ->map(fn ($items, string $service) => [
+                    'name' => $service,
+                    'paid' => $items->sum('paid') - $items->sum('refunded_amount'),
+                    'count' => $items->count(),
+                ])
+                ->sortByDesc('paid')
+                ->values(),
             'summary' => [
                 'count' => $transactions->count(),
                 'amount' => $transactions->sum('amount'),
                 'paid' => $transactions->sum('paid'),
+                'refunded' => $transactions->sum('refunded_amount'),
+                'net_paid' => $transactions->sum('paid') - $transactions->sum('refunded_amount'),
                 'balance' => $transactions->sum('balance'),
                 'paid_count' => $transactions->where('status', 'paid')->count(),
                 'partial_count' => $transactions->where('status', 'partial')->count(),
                 'unpaid_count' => $transactions->where('status', 'unpaid')->count(),
             ],
         ]);
+    }
+
+    public function invoice(Transaction $transaction): View
+    {
+        return view('transactions.invoice', [
+            'transaction' => $transaction->load(['appointment.patient', 'appointment.doctor', 'appointment.service']),
+        ]);
+    }
+
+    public function receipt(Transaction $transaction): View
+    {
+        return view('transactions.receipt', [
+            'transaction' => $transaction->load(['appointment.patient', 'appointment.doctor', 'appointment.service']),
+        ]);
+    }
+
+    public function refund(Request $request, Transaction $transaction): RedirectResponse
+    {
+        $validated = $request->validate([
+            'refunded_amount' => ['required', 'numeric', 'min:0.01', 'max:' . $transaction->paid],
+            'refund_reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        if ($transaction->appointment->status !== 'cancelled') {
+            throw ValidationException::withMessages([
+                'refunded_amount' => 'Refunds are only allowed for cancelled appointments.',
+            ]);
+        }
+
+        $transaction->update([
+            'refunded_amount' => $validated['refunded_amount'],
+            'refunded_at' => now(),
+            'refund_reason' => $validated['refund_reason'] ?? 'Cancelled appointment',
+            'balance' => 0,
+            'status' => 'refunded',
+        ]);
+
+        return redirect()->route('transactions.index')->with('status', 'Refund recorded.');
     }
 
     public function store(Request $request): RedirectResponse

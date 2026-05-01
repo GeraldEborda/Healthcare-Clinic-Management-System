@@ -8,6 +8,7 @@
                     <h1>Appointments</h1>
                     <p>Book visits while preventing doctor schedule conflicts.</p>
                 </div>
+                <a class="button" href="{{ route('appointments.calendar') }}">Calendar View</a>
             </div>
             @include('appointments._form')
         </div>
@@ -58,6 +59,13 @@
                         <td data-label="Actions">
                             <div class="actions">
                                 <a class="button secondary" href="{{ route('appointments.edit', $appointment) }}">Edit</a>
+                                @if ($appointment->status !== 'cancelled')
+                                    <form class="inline-form" method="POST" action="{{ route('appointments.cancel', $appointment) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="danger" type="submit" onclick="return confirm('Cancel this appointment?')">Cancel</button>
+                                    </form>
+                                @endif
                                 <form class="inline-form" method="POST" action="{{ route('appointments.destroy', $appointment) }}">
                                     @csrf
                                     @method('DELETE')

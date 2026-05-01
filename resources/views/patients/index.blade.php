@@ -38,6 +38,7 @@
                         <td data-label="Details">{{ $patient->date_of_birth->format('M d, Y') }}<div class="meta">{{ $patient->address ?: 'No address listed' }}</div></td>
                         <td data-label="Actions">
                             <div class="actions">
+                                <a class="button secondary" href="{{ route('patients.show', $patient) }}">History</a>
                                 <a class="button secondary" href="{{ route('patients.edit', $patient) }}">Edit</a>
                                 <form class="inline-form" method="POST" action="{{ route('patients.destroy', $patient) }}">
                                     @csrf

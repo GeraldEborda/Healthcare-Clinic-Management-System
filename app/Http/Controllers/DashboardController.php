@@ -19,6 +19,8 @@ class DashboardController extends Controller
                 'doctors' => Doctor::count(),
                 'services' => Service::where('is_active', true)->count(),
                 'appointments' => Appointment::count(),
+                'todayAppointments' => Appointment::whereDate('appointment_date', now()->toDateString())->count(),
+                'completedToday' => Appointment::whereDate('appointment_date', now()->toDateString())->where('status', 'completed')->count(),
                 'revenue' => Transaction::sum('paid'),
                 'outstanding' => Transaction::sum('balance'),
             ],
@@ -31,6 +33,12 @@ class DashboardController extends Controller
             'recentTransactions' => Transaction::with('appointment.patient')
                 ->latest()
                 ->limit(5)
+                ->get(),
+            'doctorAvailability' => Doctor::withCount([
+                'appointments as today_appointments_count' => fn ($query) => $query->whereDate('appointment_date', now()->toDateString()),
+            ])
+                ->orderBy('name')
+                ->limit(6)
                 ->get(),
         ]);
     }

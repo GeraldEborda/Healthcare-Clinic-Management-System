@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Service;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -44,6 +45,23 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')->with('status', 'Appointment scheduled.');
     }
 
+    public function calendar(): View
+    {
+        $month = request('month', now()->format('Y-m'));
+        $start = Carbon::createFromFormat('Y-m-d', $month . '-01')->startOfMonth();
+        $end = $start->copy()->endOfMonth();
+
+        return view('appointments.calendar', [
+            'month' => $start,
+            'appointmentsByDate' => Appointment::with(['patient', 'doctor', 'service'])
+                ->whereBetween('appointment_date', [$start->toDateString(), $end->toDateString()])
+                ->orderBy('appointment_date')
+                ->orderBy('start_time')
+                ->get()
+                ->groupBy(fn (Appointment $appointment) => $appointment->appointment_date->format('Y-m-d')),
+        ]);
+    }
+
     public function edit(Appointment $appointment): View
     {
         return view('appointments.edit', $this->viewData([
@@ -59,6 +77,13 @@ class AppointmentController extends Controller
         $appointment->update($data);
 
         return redirect()->route('appointments.index')->with('status', 'Appointment updated.');
+    }
+
+    public function cancel(Appointment $appointment): RedirectResponse
+    {
+        $appointment->update(['status' => 'cancelled']);
+
+        return redirect()->route('appointments.index')->with('status', 'Appointment cancelled.');
     }
 
     public function destroy(Appointment $appointment): RedirectResponse

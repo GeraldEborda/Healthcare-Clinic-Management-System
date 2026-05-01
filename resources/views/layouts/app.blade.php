@@ -612,6 +612,7 @@
                     <a href="{{ route('doctors.index') }}" class="{{ request()->routeIs('doctors.*') ? 'active' : '' }}"><span class="nav-icon">Dr</span> Doctors</a>
                     <a href="{{ route('services.index') }}" class="{{ request()->routeIs('services.*') ? 'active' : '' }}"><span class="nav-icon">S</span> Services</a>
                     <a href="{{ route('appointments.index') }}" class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}"><span class="nav-icon">A</span> Appointments</a>
+                    <a href="{{ route('inventory.index') }}" class="{{ request()->routeIs('inventory.*') ? 'active' : '' }}"><span class="nav-icon">I</span> Inventory</a>
                     <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}"><span class="nav-icon">B</span> Billing</a>
                 </nav>
                 <div class="sidebar-user">

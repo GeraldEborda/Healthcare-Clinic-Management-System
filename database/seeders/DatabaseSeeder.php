@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\InventoryItem;
 use App\Models\Patient;
 use App\Models\Service;
 use App\Models\Transaction;
@@ -119,5 +120,25 @@ class DatabaseSeeder extends Seeder
             'status' => 'pending',
             'notes' => 'Follow-up pediatric evaluation.',
         ]);
+
+        collect([
+            [
+                'name' => 'Disposable Gloves',
+                'category' => 'Supply',
+                'quantity' => 120,
+                'unit' => 'boxes',
+                'reorder_level' => 25,
+                'supplier' => 'MediSupply PH',
+            ],
+            [
+                'name' => 'Rapid Test Kits',
+                'category' => 'Lab Test',
+                'quantity' => 18,
+                'unit' => 'kits',
+                'reorder_level' => 20,
+                'supplier' => 'HealthLab Trading',
+                'expires_at' => now()->addMonths(8)->toDateString(),
+            ],
+        ])->each(fn (array $item) => InventoryItem::create($item));
     }
 }

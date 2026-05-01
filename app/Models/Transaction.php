@@ -11,6 +11,9 @@ class Transaction extends Model
         'appointment_id',
         'amount',
         'paid',
+        'refunded_amount',
+        'refunded_at',
+        'refund_reason',
         'balance',
         'status',
         'payment_method',
@@ -19,6 +22,8 @@ class Transaction extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'paid' => 'decimal:2',
+        'refunded_amount' => 'decimal:2',
+        'refunded_at' => 'datetime',
         'balance' => 'decimal:2',
     ];
 

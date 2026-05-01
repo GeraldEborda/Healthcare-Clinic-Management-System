@@ -47,7 +47,17 @@
                         <td data-label="Status">{{ ucfirst($transaction->status) }}<div class="meta">{{ $transaction->payment_method ?: 'No payment method' }}</div></td>
                         <td data-label="Actions">
                             <div class="actions">
+                                <a class="button secondary" href="{{ route('transactions.invoice', $transaction) }}">Invoice</a>
+                                <a class="button secondary" href="{{ route('transactions.receipt', $transaction) }}">Receipt</a>
                                 <a class="button secondary" href="{{ route('transactions.edit', $transaction) }}">Edit</a>
+                                @if ($transaction->appointment->status === 'cancelled' && $transaction->paid > 0 && $transaction->status !== 'refunded')
+                                    <form class="inline-form" method="POST" action="{{ route('transactions.refund', $transaction) }}">
+                                        @csrf
+                                        <input type="hidden" name="refunded_amount" value="{{ $transaction->paid }}">
+                                        <input type="hidden" name="refund_reason" value="Cancelled appointment">
+                                        <button class="danger" type="submit" onclick="return confirm('Refund this paid amount?')">Refund</button>
+                                    </form>
+                                @endif
                                 <form class="inline-form" method="POST" action="{{ route('transactions.destroy', $transaction) }}">
                                     @csrf
                                     @method('DELETE')

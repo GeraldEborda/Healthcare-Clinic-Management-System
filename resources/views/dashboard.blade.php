@@ -12,7 +12,8 @@
         <div class="stat"><div class="muted">Total Patients</div><strong>{{ $stats['patients'] }}</strong></div>
         <div class="stat"><div class="muted">Active Doctors</div><strong>{{ $stats['doctors'] }}</strong></div>
         <div class="stat"><div class="muted">Active Services</div><strong>{{ $stats['services'] }}</strong></div>
-        <div class="stat"><div class="muted">Appointments</div><strong>{{ $stats['appointments'] }}</strong></div>
+        <div class="stat"><div class="muted">Today's Appointments</div><strong>{{ $stats['todayAppointments'] }}</strong></div>
+        <div class="stat"><div class="muted">Completed Today</div><strong>{{ $stats['completedToday'] }}</strong></div>
         <div class="stat"><div class="muted">Revenue Collected</div><strong>PHP {{ number_format($stats['revenue'], 2) }}</strong></div>
         <div class="stat"><div class="muted">Outstanding Balance</div><strong>PHP {{ number_format($stats['outstanding'], 2) }}</strong></div>
     </div>
@@ -56,6 +57,27 @@
                     </div>
                 @empty
                     <div class="muted">No transactions recorded yet.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <div class="page-head">
+                <div class="section-title">
+                    <h3>Doctor Availability</h3>
+                    <p>Today’s patient flow by doctor.</p>
+                </div>
+                <a class="button secondary" href="{{ route('doctors.index') }}">Manage</a>
+            </div>
+            <div class="stack">
+                @forelse ($doctorAvailability as $doctor)
+                    <div class="record">
+                        <strong>{{ $doctor->name }}</strong>
+                        <div class="meta">{{ $doctor->specialization }} | {{ $doctor->today_appointments_count }} patients today</div>
+                        <div class="meta">{{ implode(', ', $doctor->available_days ?? []) ?: 'Schedule not set' }}</div>
+                    </div>
+                @empty
+                    <div class="muted">No doctors recorded yet.</div>
                 @endforelse
             </div>
         </div>

@@ -33,6 +33,18 @@ class PatientController extends Controller
         return redirect()->route('patients.index')->with('status', 'Patient added.');
     }
 
+    public function show(Patient $patient): View
+    {
+        return view('patients.show', [
+            'patient' => $patient->load([
+                'appointments' => fn ($query) => $query
+                    ->with(['doctor', 'service', 'transaction'])
+                    ->orderByDesc('appointment_date')
+                    ->orderByDesc('start_time'),
+            ]),
+        ]);
+    }
+
     public function edit(Patient $patient): View
     {
         return view('patients.edit', compact('patient'));

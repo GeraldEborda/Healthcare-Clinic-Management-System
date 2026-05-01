@@ -96,4 +96,20 @@ class ClinicManagementTest extends TestCase
         $response->assertSee('Billing Report');
         $response->assertSee('Financial summary');
     }
+
+    public function test_appointment_calendar_loads_successfully(): void
+    {
+        $response = $this->get(route('appointments.calendar'));
+
+        $response->assertOk();
+        $response->assertSee('Calendar View');
+    }
+
+    public function test_inventory_module_loads_successfully(): void
+    {
+        $response = $this->get(route('inventory.index'));
+
+        $response->assertOk();
+        $response->assertSee('Inventory');
+    }
 }

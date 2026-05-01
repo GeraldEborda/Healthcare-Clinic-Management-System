@@ -38,10 +38,58 @@
     <div class="grid grid-3" style="margin-bottom: 24px;">
         <div class="stat"><div class="muted">Transactions</div><strong>{{ $summary['count'] }}</strong></div>
         <div class="stat"><div class="muted">Total Amount</div><strong>PHP {{ number_format($summary['amount'], 2) }}</strong></div>
-        <div class="stat"><div class="muted">Total Paid</div><strong>PHP {{ number_format($summary['paid'], 2) }}</strong></div>
+        <div class="stat"><div class="muted">Gross Paid</div><strong>PHP {{ number_format($summary['paid'], 2) }}</strong></div>
         <div class="stat"><div class="muted">Outstanding</div><strong>PHP {{ number_format($summary['balance'], 2) }}</strong></div>
-        <div class="stat"><div class="muted">Paid Records</div><strong>{{ $summary['paid_count'] }}</strong></div>
-        <div class="stat"><div class="muted">Partial / Unpaid</div><strong>{{ $summary['partial_count'] + $summary['unpaid_count'] }}</strong></div>
+        <div class="stat"><div class="muted">Refunded</div><strong>PHP {{ number_format($summary['refunded'], 2) }}</strong></div>
+        <div class="stat"><div class="muted">Net Revenue</div><strong>PHP {{ number_format($summary['net_paid'], 2) }}</strong></div>
+    </div>
+
+    <div class="grid grid-2" style="margin-bottom: 24px;">
+        <div class="table-wrap">
+            <div class="page-head">
+                <div class="section-title">
+                    <h3>Revenue by Doctor</h3>
+                    <p>Net paid amount after refunds.</p>
+                </div>
+            </div>
+            <table>
+                <thead><tr><th>Doctor</th><th>Transactions</th><th>Net Revenue</th></tr></thead>
+                <tbody>
+                @forelse ($doctorRevenue as $row)
+                    <tr>
+                        <td data-label="Doctor"><strong>{{ $row['name'] }}</strong></td>
+                        <td data-label="Transactions">{{ $row['count'] }}</td>
+                        <td data-label="Net Revenue">PHP {{ number_format($row['paid'], 2) }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="3" class="muted">No doctor revenue yet.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-wrap">
+            <div class="page-head">
+                <div class="section-title">
+                    <h3>Revenue by Service</h3>
+                    <p>Net paid amount by consultation or service type.</p>
+                </div>
+            </div>
+            <table>
+                <thead><tr><th>Service</th><th>Transactions</th><th>Net Revenue</th></tr></thead>
+                <tbody>
+                @forelse ($serviceRevenue as $row)
+                    <tr>
+                        <td data-label="Service"><strong>{{ $row['name'] }}</strong></td>
+                        <td data-label="Transactions">{{ $row['count'] }}</td>
+                        <td data-label="Net Revenue">PHP {{ number_format($row['paid'], 2) }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="3" class="muted">No service revenue yet.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="table-wrap">
@@ -61,6 +109,7 @@
                     <th>Doctor & Service</th>
                     <th>Amount</th>
                     <th>Paid</th>
+                    <th>Refunded</th>
                     <th>Balance</th>
                     <th>Status</th>
                 </tr>
@@ -79,11 +128,12 @@
                     </td>
                     <td data-label="Amount">PHP {{ number_format($transaction->amount, 2) }}</td>
                     <td data-label="Paid">PHP {{ number_format($transaction->paid, 2) }}</td>
+                    <td data-label="Refunded">PHP {{ number_format($transaction->refunded_amount, 2) }}</td>
                     <td data-label="Balance">PHP {{ number_format($transaction->balance, 2) }}</td>
                     <td data-label="Status">{{ ucfirst($transaction->status) }}</td>
                 </tr>
             @empty
-                <tr><td colspan="7" class="muted">No transactions match this report.</td></tr>
+                <tr><td colspan="8" class="muted">No transactions match this report.</td></tr>
             @endforelse
             </tbody>
         </table>
